@@ -119,7 +119,7 @@ function openDt(id){const d=D.find(x=>x.id===id);const g=d.g;document.getElement
 ${g.length?`<div class="gg">${g.map(x=>`<figure style="position:relative"><img loading="lazy" src="${x.p}">${x.mc?`<em class="mb" style="top:6px;bottom:auto;left:6px">${x.media?'媒体图':'商家图'}·仅供参考</em>`:''}<figcaption>${x.cy2?'<b style="color:#c2410c">餐饮案例</b> · ':''}${x.by?x.by+' · ':''}${x.lic} · <a href="${x.src}" target="_blank" rel="noopener">来源</a></figcaption></figure>`).join('')}</div>`:'<div class="nog">实拍图待补</div>'}`;document.getElementById('dm').classList.add('on')}
 document.getElementById('dm').onclick=e=>{if(e.target.id==='dm'||e.target.classList.contains('cl'))e.currentTarget.classList.remove('on')};
 </script><script>
-const cv=document.getElementById('cv'),cgrid=document.getElementById('cgrid');let ccat='全部',cscene='全部';const CSCENE=['全部','门头','室内文化'];const isMen=c=>c.ims.some(x=>'门头' in (x.part||''));const isNei=c=>c.ims.some(x=>/墙面|包间|天花|吧台|室内|地面/.test(x.part||''));
+const cv=document.getElementById('cv'),cgrid=document.getElementById('cgrid');let ccat='全部',cscene='全部';const CSCENE=['全部','门头','室内文化'];const isMen=c=>c.ims.some(x=>(x.part||'').includes('门头'));const isNei=c=>c.ims.some(x=>/墙面|包间|天花|吧台|室内|地面/.test(x.part||''));
 const CC=['全部',...new Set(CASES.map(c=>c.cat))];
 CSCENE.forEach(v=>{const c=document.createElement('span');c.className='chip'+(v==='全部'?' on':'');c.textContent=v==='全部'?'场景 · 全部':v;c.onclick=()=>{cscene=v;[...c.parentNode.children].forEach(x=>x.classList.toggle('on',x===c));rcase()};document.getElementById('cscene').appendChild(c)});
 CC.forEach(v=>{const c=document.createElement('span');c.className='chip'+(v==='全部'?' on':'');c.textContent=v==='全部'?'品类 · 全部':v;c.onclick=()=>{ccat=v;[...c.parentNode.children].forEach(x=>x.classList.toggle('on',x===c));rcase()};document.getElementById('ccat').appendChild(c)});
@@ -132,4 +132,19 @@ function openCase(no){const c=CASES.find(x=>x.no===+no);document.getElementById(
 <div class="gg">${c.ims.map(x=>`<figure style="position:relative"><img loading="lazy" src="${x.p}"><em class="mb" style="top:6px;bottom:auto;left:6px">媒体图·仅供参考</em><figcaption>部位：${x.part}${x.fixed?`（抽查改正，原标「${x.orig}」）`:''} · <a href="${c.url}" target="_blank" rel="noopener">gooood 项目页</a></figcaption></figure>`).join('')}</div>`;document.getElementById('dm').classList.add('on');document.getElementById('dm').scrollTop=0}
 document.addEventListener('click',e=>{const m=e.target.closest('[data-m]');if(m){e.stopPropagation();openDt(m.dataset.m);document.getElementById('dm').scrollTop=0;return}const c=e.target.closest('[data-case]');if(c){e.stopPropagation();openCase(c.dataset.case)}},true);
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));const isC=b.dataset.tab==='c';cv.style.display=isC?'':'none';document.getElementById('grid').style.display=isC?'none':'';['cats','tiers','pos'].forEach(i=>document.getElementById(i).style.display=isC?'none':'');document.querySelector('.ent').style.display=isC?'none':'';if(isC)rcase()});
+document.querySelectorAll('.en').forEach(b=>b.onclick=()=>{
+  const v=b.dataset.en;st.pos=st.pos===v?'全部':v;st.cat='全部';st.tier='全部';st.q='';
+  document.getElementById('q').value='';
+  document.querySelectorAll('.en').forEach(x=>x.classList.toggle('on',x.dataset.en===st.pos));
+  ['cats','tiers','pos'].forEach(id=>{const row=document.getElementById(id);[...row.children].forEach(x=>{
+    const raw=x.textContent.replace(/^参考价 · /,'').replace(/^餐饮场景 · /,'');
+    const want=id==='cats'?st.cat:id==='tiers'?st.tier:st.pos;
+    x.classList.toggle('on',want==='全部'?raw.includes('全部'):raw===want);
+  })});
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.tab==='m'));
+  document.getElementById('grid').style.display='';document.getElementById('cv').style.display='none';
+  document.querySelector('.ent').style.display='';['cats','tiers','pos'].forEach(i=>document.getElementById(i).style.display='');
+  render();
+});
+
 </script></body></html>
